@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% block title %}Defence Career Guidance Portal – Indian Armed Forces{% endblock %}
+{% block extra_css %}
+<style>
+/* HERO */
+.hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 120px 48px 80px; }
+.hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 20% 50%, rgba(74,124,89,0.08) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 80% 50%, rgba(21,101,192,0.08) 0%, transparent 70%); }
+.hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 80px 80px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%); }
+.hero-inner { position: relative; text-align: center; max-width: 860px; }
+.hero-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 28px; animation: fadeUp 0.8s 0.2s both; }
+.hero-title { font-family: var(--font-head); font-size: clamp(48px, 8vw, 92px); font-weight: 700; line-height: 0.95; letter-spacing: 4px; text-transform: uppercase; color: #fff; animation: fadeUp 0.9s 0.4s both; }
+.hero-title span { color: var(--gold); }
+.hero-sub { font-family: var(--font-body); font-style: italic; font-size: 17px; color: var(--muted); margin: 24px auto 0; line-height: 1.8; max-width: 580px; animation: fadeUp 0.9s 0.6s both; }
+.hero-ctas { display: flex; justify-content: center; gap: 16px; margin-top: 48px; flex-wrap: wrap; animation: fadeUp 0.9s 0.8s both; }
+.cta-btn { font-family: var(--font-head); font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 14px 28px; border-radius: 6px; text-decoration: none; transition: all 0.2s; }
+.cta-primary { background: var(--gold); color: #000; }
+.cta-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+.cta-outline { border: 1px solid var(--border2); color: var(--text); }
+.cta-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+.hero-forces { display: flex; justify-content: center; gap: 32px; margin-top: 56px; animation: fadeUp 0.9s 1s both; flex-wrap: wrap; }
+.force-pill { display: flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 40px; border: 1px solid; font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: all 0.2s; }
+.force-pill.army { border-color: var(--army); color: #6dbf82; background: rgba(74,124,89,0.1); }
+.force-pill.navy { border-color: var(--navy); color: #5fa8e8; background: rgba(37,99,168,0.1); }
+.force-pill.air  { border-color: var(--air);  color: #7ec8fa; background: rgba(21,101,192,0.1); }
+.force-pill:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+/* STATS */
+.stats-bar { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0 48px; display: grid; grid-template-columns: repeat(4, 1fr); }
+.stat-item { padding: 32px 24px; border-right: 1px solid var(--border); text-align: center; }
+.stat-item:last-child { border-right: none; }
+.stat-num { font-family: var(--font-head); font-size: 38px; font-weight: 700; color: var(--gold-light); line-height: 1; }
+.stat-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+
+/* FORCE CARDS */
+.forces-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); }
+.force-card { background: var(--surface); padding: 40px 36px; position: relative; overflow: hidden; transition: background 0.3s; }
+.force-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.force-card.army::before { background: linear-gradient(90deg, transparent, #6dbf82, transparent); }
+.force-card.navy::before { background: linear-gradient(90deg, transparent, #5fa8e8, transparent); }
+.force-card.air::before  { background: linear-gradient(90deg, transparent, #7ec8fa, transparent); }
+.force-card:hover { background: var(--surface2); }
+.card-emblem { font-size: 48px; margin-bottom: 20px; display: block; }
+.card-name { font-family: var(--font-head); font-size: 26px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+.card-name.army { color: #6dbf82; } .card-name.navy { color: #5fa8e8; } .card-name.air { color: #7ec8fa; }
+.card-motto { font-family: var(--font-body); font-style: italic; font-size: 13px; color: var(--gold); margin-bottom: 16px; }
+.card-desc { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 24px; }
+.card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.cs-val { font-family: var(--font-head); font-size: 19px; font-weight: 700; color: #fff; }
+.cs-lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+/* ENTRIES */
+.entries-section { background: var(--bg2); }
+.etabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 40px; overflow-x: auto; }
+.etab { padding: 14px 28px; font-family: var(--font-head); font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.etab.act-army { color: #6dbf82; border-bottom-color: #6dbf82; }
+.etab.act-navy { color: #5fa8e8; border-bottom-color: #5fa8e8; }
+.etab.act-air  { color: #7ec8fa; border-bottom-color: #7ec8fa; }
+.ep { display: none; } .ep.show { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.ec { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 22px; transition: all 0.2s; }
+.ec:hover { border-color: var(--border2); transform: translateY(-2px); }
+.etag { font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; display: inline-block; margin-bottom: 12px; }
+.etag.army { background: rgba(74,124,89,0.2); color: #6dbf82; }
+.etag.navy { background: rgba(37,99,168,0.2); color: #5fa8e8; }
+.etag.air  { background: rgba(21,101,192,0.2); color: #7ec8fa; }
+.etag.gold { background: rgba(201,162,39,0.15); color: var(--gold); }
+.etag.gray { background: rgba(255,255,255,0.05); color: var(--muted); }
+.ec-title { font-family: var(--font-head); font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+.ec-detail { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+.ebadges { display: flex; flex-wrap: wrap; gap: 6px; }
+.ebadge { font-family: var(--font-mono); font-size: 10px; padding: 3px 8px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); }
+
+/* PAY TABLE */
+.ptabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 36px; }
+.ptab { padding: 12px 24px; font-family: var(--font-head); font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.ptab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.ptw { display: none; overflow-x: auto; } .ptw.show { display: block; }
+table.pay { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.pay th { text-align: left; padding: 12px 16px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+table.pay td { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+table.pay tr:hover td { background: rgba(255,255,255,0.02); }
+.rtag { font-family: var(--font-head); font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 3px; display: inline-block; }
+.rtag.army { background: rgba(74,124,89,0.2); color: #6dbf82; }
+.rtag.navy { background: rgba(37,99,168,0.2); color: #5fa8e8; }
+.rtag.air  { background: rgba(21,101,192,0.2); color: #7ec8fa; }
+.pval { font-family: var(--font-head); font-size: 17px; font-weight: 700; color: var(--gold-light); }
+td.level { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+/* COMPARE */
+.cmp-section { background: var(--bg2); }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px; }
+table.cmp th { padding: 18px 20px; text-align: center; border-bottom: 2px solid var(--border2); }
+table.cmp th:first-child { text-align: left; }
+.th-lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+.th-force { font-family: var(--font-head); font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; display: block; margin-top: 4px; }
+.th-force.army { color: #6dbf82; } .th-force.navy { color: #5fa8e8; } .th-force.air { color: #7ec8fa; }
+table.cmp td { padding: 13px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); text-align: center; }
+table.cmp td:first-child { text-align: left; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+table.cmp tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* GOALS */
+.goals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.gc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 22px; transition: all 0.2s; }
+.gc:hover { border-color: rgba(201,162,39,0.4); transform: translateY(-2px); }
+.gc-q { font-family: var(--font-head); font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 10px; }
+.gc-a { font-size: 13px; color: var(--gold); font-style: italic; line-height: 1.6; }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 900px) {
+  .forces-grid, .paths-grid { grid-template-columns: 1fr; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); padding: 0 20px; }
+  .stat-item:nth-child(2) { border-right: none; }
+  .hero { padding: 100px 24px 80px; }
+  .hero-forces { flex-direction: column; align-items: center; }
+}
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Indian Armed Forces &nbsp;·&nbsp; Career Guidance Portal</div>
+    <h1 class="hero-title">Serve.<br><span>Protect.</span><br>Lead.</h1>
+    <p class="hero-sub">Your complete reference for joining the Indian Army, Navy, and Air Force — entry schemes, pay scales, eligibility, and career paths.</p>
+    <div class="hero-ctas">
+      <a href="/eligibility" class="cta-btn cta-primary">Check My Eligibility →</a>
+      <a href="#entries"    class="cta-btn cta-outline">View Entry Schemes</a>
+    </div>
+    <div class="hero-forces">
+      <a href="#army-sec" class="force-pill army">⚔️ &nbsp; Army</a>
+      <a href="#navy-sec" class="force-pill navy">⚓ &nbsp; Navy</a>
+      <a href="#air-sec"  class="force-pill air">✈️ &nbsp; Air Force</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num">14L+</div><div class="stat-label">Army Personnel</div></div>
+  <div class="stat-item"><div class="stat-num">67K+</div><div class="stat-label">Navy Personnel</div></div>
+  <div class="stat-item"><div class="stat-num">1.4L+</div><div class="stat-label">Air Force Personnel</div></div>
+  <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Forces, One Nation</div></div>
+</div>
+<div class="divider"></div>
+
+<!-- FORCE OVERVIEW -->
+<section class="section" id="forces">
+  <div class="section-label">Overview</div>
+  <div class="section-heading">The Three <span>Forces</span></div>
+  <div class="forces-grid">
+    <div class="force-card army" id="army-sec">
+      <span class="card-emblem">⚔️</span>
+      <div class="card-name army">Indian Army</div>
+      <div class="card-motto">"Service Before Self"</div>
+      <div class="card-desc">India's land-based branch and largest service. Offers careers across combat, engineering, medical, and education branches.</div>
+      <div class="card-stats">
+        <div><div class="cs-val">~1.4M</div><div class="cs-lbl">Personnel</div></div>
+        <div><div class="cs-val">IMA</div><div class="cs-lbl">Academy</div></div>
+        <div><div class="cs-val">6+</div><div class="cs-lbl">Entry Routes</div></div>
+        <div><div class="cs-val">Dehradun</div><div class="cs-lbl">Location</div></div>
+      </div>
+    </div>
+    <div class="force-card navy" id="navy-sec">
+      <span class="card-emblem">⚓</span>
+      <div class="card-name navy">Indian Navy</div>
+      <div class="card-motto">"Sh No Varuna"</div>
+      <div class="card-desc">India's maritime force guarding 7,500 km of coastline. Operates ships, submarines, and carrier-based aircraft.</div>
+      <div class="card-stats">
+        <div><div class="cs-val">~67K</div><div class="cs-lbl">Personnel</div></div>
+        <div><div class="cs-val">INA</div><div class="cs-lbl">Academy</div></div>
+        <div><div class="cs-val">6+</div><div class="cs-lbl">Entry Routes</div></div>
+        <div><div class="cs-val">Ezhimala</div><div class="cs-lbl">Location</div></div>
+      </div>
+    </div>
+    <div class="force-card air" id="air-sec">
+      <span class="card-emblem">✈️</span>
+      <div class="card-name air">Indian Air Force</div>
+      <div class="card-motto">"Touch the Sky with Glory"</div>
+      <div class="card-desc">India's aerial warfare service across 60+ stations. Flying, ground duty, and technical branch careers.</div>
+      <div class="card-stats">
+        <div><div class="cs-val">~1.4L</div><div class="cs-lbl">Personnel</div></div>
+        <div><div class="cs-val">AFA</div><div class="cs-lbl">Academy</div></div>
+        <div><div class="cs-val">6+</div><div class="cs-lbl">Entry Routes</div></div>
+        <div><div class="cs-val">Dundigal</div><div class="cs-lbl">Location</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ENTRY SCHEMES -->
+<section class="section entries-section" id="entries">
+  <div class="section-label">How to Join</div>
+  <div class="section-heading">Entry <span>Schemes</span></div>
+  <div class="etabs">
+    <button class="etab act-army" onclick="showEP('army',this)">⚔️ Army</button>
+    <button class="etab" onclick="showEP('navy',this)">⚓ Navy</button>
+    <button class="etab" onclick="showEP('air',this)">✈️ Air Force</button>
+  </div>
+  <div class="ep show" id="ep-army">
+    <div class="ec"><span class="etag army">After 12th</span><div class="ec-title">NDA – National Defence Academy</div><div class="ec-detail">Most prestigious entry. UPSC exam twice a year. Training at NDA Pune then IMA Dehradun.</div><div class="ebadges"><span class="ebadge">Age: 16.5–19.5</span><span class="ebadge">PCM required</span><span class="ebadge">UPSC exam</span></div></div>
+    <div class="ec"><span class="etag army">After 12th</span><div class="ec-title">TES – Technical Entry Scheme</div><div class="ec-detail">For PCM students with ≥70%. 5-year B.Tech at CME/MCTE. No written exam.</div><div class="ebadges"><span class="ebadge">Age: 16.5–19.5</span><span class="ebadge">PCM ≥70%</span></div></div>
+    <div class="ec"><span class="etag gold">Graduate</span><div class="ec-title">IMA via CDS (Permanent Commission)</div><div class="ec-detail">UPSC CDS exam. Permanent Commission as officer. Biannual notification.</div><div class="ebadges"><span class="ebadge">Age: 19–24</span><span class="ebadge">Any degree</span></div></div>
+    <div class="ec"><span class="etag gold">Graduate</span><div class="ec-title">OTA via CDS / UPSC (SSC)</div><div class="ec-detail">Short Service Commission at OTA Chennai. Open to men and women. 10–14 year commission.</div><div class="ebadges"><span class="ebadge">Age: 19–25</span><span class="ebadge">Graduate</span></div></div>
+    <div class="ec"><span class="etag gold">Professional</span><div class="ec-title">JAG – Judge Advocate General</div><div class="ec-detail">Legal branch of the Indian Army. Men and women eligible. PC and SSC available.</div><div class="ebadges"><span class="ebadge">Age: 21–27</span><span class="ebadge">LLB/LLM</span></div></div>
+    <div class="ec"><span class="etag gray">JCO / OR</span><div class="ec-title">Soldier / JCO Entries</div><div class="ec-detail">Rally-based recruitment: GD, Clerk, Technical, Tradesman, Nursing Assistant.</div><div class="ebadges"><span class="ebadge">Age: 17.5–23</span><span class="ebadge">8th–12th</span></div></div>
+  </div>
+  <div class="ep" id="ep-navy">
+    <div class="ec"><span class="etag navy">After 12th</span><div class="ec-title">NDA – Naval Wing</div><div class="ec-detail">Entry into Naval Wing at NDA via UPSC. Executive or engineering branches.</div><div class="ebadges"><span class="ebadge">Age: 16.5–19.5</span><span class="ebadge">PCM required</span></div></div>
+    <div class="ec"><span class="etag navy">After 12th</span><div class="ec-title">10+2 B.Tech Entry (Cadet)</div><div class="ec-detail">4-year B.Tech at Naval Academy Ezhimala. Direct commission on completion.</div><div class="ebadges"><span class="ebadge">Age: 17–19</span><span class="ebadge">PCM ≥70%</span></div></div>
+    <div class="ec"><span class="etag gold">Graduate</span><div class="ec-title">CDS – Executive / Technical Branch</div><div class="ec-detail">UPSC CDS for executive branch. Technical graduates apply directly.</div><div class="ebadges"><span class="ebadge">Age: 19–24</span><span class="ebadge">BE/B.Tech</span></div></div>
+    <div class="ec"><span class="etag gold">Graduate</span><div class="ec-title">INET – Indian Naval Entrance Test</div><div class="ec-detail">Navy's biannual own entrance exam. SSB interview follows selection.</div><div class="ebadges"><span class="ebadge">Age: 19–25</span><span class="ebadge">Graduate</span></div></div>
+    <div class="ec"><span class="etag gold">SSC</span><div class="ec-title">Short Service Commission</div><div class="ec-detail">10–14 year commission for law, education, logistics, and IT branches.</div><div class="ebadges"><span class="ebadge">Age: 19–27</span><span class="ebadge">Degree required</span></div></div>
+    <div class="ec"><span class="etag gray">Sailor</span><div class="ec-title">MR / AA / SSR Entries</div><div class="ec-detail">Matric Recruit, Artificer Apprentice, Senior Secondary Recruit for below-officer roles.</div><div class="ebadges"><span class="ebadge">Age: 17–20</span><span class="ebadge">10th / 12th</span></div></div>
+  </div>
+  <div class="ep" id="ep-air">
+    <div class="ec"><span class="etag air">After 12th</span><div class="ec-title">NDA – Air Force Wing</div><div class="ec-detail">Entry into Air Force Wing at NDA via UPSC. Flying or ground duty branches.</div><div class="ebadges"><span class="ebadge">Age: 16.5–19.5</span><span class="ebadge">PCM required</span></div></div>
+    <div class="ec"><span class="etag gold">Graduate</span><div class="ec-title">AFCAT – Air Force Common Admission Test</div><div class="ec-detail">Biannual IAF exam for Flying and Ground Duty (Technical/Non-Technical) branches.</div><div class="ebadges"><span class="ebadge">Age: 20–24</span><span class="ebadge">Degree / B.Tech</span></div></div>
+    <div class="ec"><span class="etag gold">Graduate</span><div class="ec-title">CDS – Air Force Academy (Flying Branch)</div><div class="ec-detail">UPSC CDS for Flying Branch. AFA Dundigal. Permanent Commission.</div><div class="ebadges"><span class="ebadge">Age: 19–23</span><span class="ebadge">PCM graduate</span></div></div>
+    <div class="ec"><span class="etag air">Specialist</span><div class="ec-title">Meteorology Branch</div><div class="ec-detail">For MSc Physics/Maths/CS graduates. Short Service Commission.</div><div class="ebadges"><span class="ebadge">Age: 20–26</span><span class="ebadge">MSc Science</span></div></div>
+    <div class="ec"><span class="etag gold">SSC</span><div class="ec-title">SSC Women Entry (Flying)</div><div class="ec-detail">SSC for women in Flying (Helicopter, Transport) and Ground Duty via AFCAT.</div><div class="ebadges"><span class="ebadge">Age: 20–24</span><span class="ebadge">Degree required</span></div></div>
+    <div class="ec"><span class="etag gray">Airmen</span><div class="ec-title">Airmen Group X & Y</div><div class="ec-detail">Group X (Technical) and Group Y (Non-Technical). Largest below-officer entry.</div><div class="ebadges"><span class="ebadge">Age: 17–21</span><span class="ebadge">12th PCM / Any</span></div></div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- PAY SCALE -->
+<section class="section" id="pay">
+  <div class="section-label">Compensation</div>
+  <div class="section-heading">Pay <span>Scale</span> (7th CPC)</div>
+  <div class="ptabs">
+    <button class="ptab active" onclick="showPay('army',this)">⚔️ Army</button>
+    <button class="ptab" onclick="showPay('navy',this)">⚓ Navy</button>
+    <button class="ptab" onclick="showPay('air',this)">✈️ Air Force</button>
+  </div>
+  <div class="ptw show" id="pt-army">
+    <table class="pay"><tr><th>Rank</th><th>Level</th><th>Basic Pay</th><th>Approx. Gross</th></tr>
+    <tr><td><span class="rtag army">Lieutenant</span></td><td class="level">Level 10</td><td>₹56,100</td><td><span class="pval">₹80,000+</span></td></tr>
+    <tr><td><span class="rtag army">Captain</span></td><td class="level">Level 10B</td><td>₹61,300</td><td><span class="pval">₹90,000+</span></td></tr>
+    <tr><td><span class="rtag army">Major</span></td><td class="level">Level 11</td><td>₹69,400</td><td><span class="pval">₹1,00,000+</span></td></tr>
+    <tr><td><span class="rtag army">Lt Colonel</span></td><td class="level">Level 12A</td><td>₹1,21,200</td><td><span class="pval">₹1,70,000+</span></td></tr>
+    <tr><td><span class="rtag army">Colonel</span></td><td class="level">Level 13</td><td>₹1,30,600</td><td><span class="pval">₹1,90,000+</span></td></tr>
+    <tr><td><span class="rtag army">Brigadier</span></td><td class="level">Level 13A</td><td>₹1,39,600</td><td><span class="pval">₹2,10,000+</span></td></tr>
+    <tr><td><span class="rtag army">Major General</span></td><td class="level">Level 14</td><td>₹1,44,200</td><td><span class="pval">₹2,40,000+</span></td></tr>
+    </table>
+  </div>
+  <div class="ptw" id="pt-navy">
+    <table class="pay"><tr><th>Rank</th><th>Level</th><th>Basic Pay</th><th>Approx. Gross</th></tr>
+    <tr><td><span class="rtag navy">Sub Lieutenant</span></td><td class="level">Level 10</td><td>₹56,100</td><td><span class="pval">₹80,000+</span></td></tr>
+    <tr><td><span class="rtag navy">Lieutenant</span></td><td class="level">Level 10B</td><td>₹61,300</td><td><span class="pval">₹95,000+</span></td></tr>
+    <tr><td><span class="rtag navy">Lt Commander</span></td><td class="level">Level 11</td><td>₹69,400</td><td><span class="pval">₹1,05,000+</span></td></tr>
+    <tr><td><span class="rtag navy">Commander</span></td><td class="level">Level 12A</td><td>₹1,21,200</td><td><span class="pval">₹1,75,000+</span></td></tr>
+    <tr><td><span class="rtag navy">Captain</span></td><td class="level">Level 13</td><td>₹1,30,600</td><td><span class="pval">₹2,00,000+</span></td></tr>
+    <tr><td><span class="rtag navy">Commodore</span></td><td class="level">Level 13A</td><td>₹1,39,600</td><td><span class="pval">₹2,20,000+</span></td></tr>
+    <tr><td><span class="rtag navy">Rear Admiral</span></td><td class="level">Level 14</td><td>₹1,44,200</td><td><span class="pval">₹2,50,000+</span></td></tr>
+    </table>
+  </div>
+  <div class="ptw" id="pt-air">
+    <table class="pay"><tr><th>Rank</th><th>Level</th><th>Basic Pay</th><th>Approx. Gross</th></tr>
+    <tr><td><span class="rtag air">Flying Officer</span></td><td class="level">Level 10</td><td>₹56,100</td><td><span class="pval">₹80,000+</span></td></tr>
+    <tr><td><span class="rtag air">Flight Lieutenant</span></td><td class="level">Level 10B</td><td>₹61,300</td><td><span class="pval">₹1,00,000+</span></td></tr>
+    <tr><td><span class="rtag air">Squadron Leader</span></td><td class="level">Level 11</td><td>₹69,400</td><td><span class="pval">₹1,10,000+</span></td></tr>
+    <tr><td><span class="rtag air">Wing Commander</span></td><td class="level">Level 12A</td><td>₹1,21,200</td><td><span class="pval">₹1,80,000+</span></td></tr>
+    <tr><td><span class="rtag air">Group Captain</span></td><td class="level">Level 13</td><td>₹1,30,600</td><td><span class="pval">₹2,00,000+</span></td></tr>
+    <tr><td><span class="rtag air">Air Commodore</span></td><td class="level">Level 13A</td><td>₹1,39,600</td><td><span class="pval">₹2,25,000+</span></td></tr>
+    <tr><td><span class="rtag air">Air Vice Marshal</span></td><td class="level">Level 14</td><td>₹1,44,200</td><td><span class="pval">₹2,50,000+</span></td></tr>
+    </table>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- COMPARE -->
+<section class="section cmp-section" id="compare">
+  <div class="section-label">Side-by-Side</div>
+  <div class="section-heading">All Three <span>Forces</span> Compared</div>
+  <div style="overflow-x:auto;">
+    <table class="cmp">
+      <tr>
+        <th><span class="th-lbl">Parameter</span></th>
+        <th><span class="th-lbl">Force 01</span><span class="th-force army">⚔️ Army</span></th>
+        <th><span class="th-lbl">Force 02</span><span class="th-force navy">⚓ Navy</span></th>
+        <th><span class="th-lbl">Force 03</span><span class="th-force air">✈️ Air Force</span></th>
+      </tr>
+      <tr><td>Headquarters</td><td>New Delhi</td><td>New Delhi</td><td>New Delhi</td></tr>
+      <tr><td>Strength</td><td>~14 lakh</td><td>~67,000</td><td>~1.4 lakh</td></tr>
+      <tr><td>Training Academy</td><td>IMA, Dehradun</td><td>INA, Ezhimala</td><td>AFA, Dundigal</td></tr>
+      <tr><td>Min Height (Men)</td><td>157 cm</td><td>157 cm</td><td>162.5 cm</td></tr>
+      <tr><td>Key Exam (12th)</td><td>NDA / TES</td><td>NDA / 10+2 B.Tech</td><td>NDA</td></tr>
+      <tr><td>Key Exam (Grad)</td><td>CDS / OTA</td><td>CDS / INET</td><td>AFCAT / CDS</td></tr>
+      <tr><td>Special Allowance</td><td>Field / Para pay</td><td>Sea allowance</td><td>Flying allowance</td></tr>
+      <tr><td>Women Entry</td><td>JAG, OTA SSC</td><td>INET, SSC</td><td>AFCAT (Flying, GD)</td></tr>
+      <tr><td>Pension</td><td>OROP + ECHS</td><td>OROP + ECHS</td><td>OROP + ECHS</td></tr>
+    </table>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- FIND YOUR PATH -->
+<section class="section" id="goals">
+  <div class="section-label">Quick Guide</div>
+  <div class="section-heading">Find <span>Your Path</span></div>
+  <div class="goals-grid">
+    <div class="gc"><div class="gc-q">I want to fly fighter jets</div><div class="gc-a">→ IAF Flying Branch via NDA (12th) or AFCAT (graduate)</div></div>
+    <div class="gc"><div class="gc-q">I want to serve on warships</div><div class="gc-a">→ Navy Executive Branch via NDA or INET</div></div>
+    <div class="gc"><div class="gc-q">I'm in 12th with PCM</div><div class="gc-a">→ NDA covers all three forces. Start prep now!</div></div>
+    <div class="gc"><div class="gc-q">I'm an engineering graduate</div><div class="gc-a">→ CDS, AFCAT (tech), or INET — all three forces need tech officers</div></div>
+    <div class="gc"><div class="gc-q">I'm a woman, can I join?</div><div class="gc-a">→ Yes! OTA (Army), INET (Navy), AFCAT Flying/GD (Air Force)</div></div>
+    <div class="gc"><div class="gc-q">I want a legal career in defence</div><div class="gc-a">→ Army JAG Entry — LLB/LLM required, men and women eligible</div></div>
+    <div class="gc"><div class="gc-q">I passed 10th only</div><div class="gc-a">→ Army Tradesman / Navy MR / IAF Group Y — 10th pass entries available</div></div>
+    <div class="gc"><div class="gc-q">I want to be an Army doctor</div><div class="gc-a">→ AFMS entry — MBBS required, available across all three forces</div></div>
+  </div>
+
+  <div style="text-align:center;margin-top:48px;">
+    <a href="/eligibility" style="display:inline-block;font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:16px 36px;background:var(--gold);color:#000;border-radius:6px;text-decoration:none;transition:background 0.2s;">
+      Check Your Eligibility Now →
+    </a>
+  </div>
+</section>
+
+<script>
+function showEP(f, btn) {
+  ['army','navy','air'].forEach(x => document.getElementById('ep-'+x).classList.remove('show'));
+  document.querySelectorAll('.etab').forEach(t => t.className = 'etab');
+  document.getElementById('ep-'+f).classList.add('show');
+  btn.classList.add('act-'+f);
+}
+function showPay(f, btn) {
+  ['army','navy','air'].forEach(x => document.getElementById('pt-'+x).classList.remove('show'));
+  document.querySelectorAll('.ptab').forEach(t => t.className = 'ptab');
+  document.getElementById('pt-'+f).classList.add('show');
+  btn.classList.add('active');
+}
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
+}, {threshold: 0.1});
+document.querySelectorAll('.force-card,.ec,.gc').forEach(el => {
+  el.style.opacity='0'; el.style.transform='translateY(20px)'; el.style.transition='opacity 0.5s ease,transform 0.5s ease';
+  observer.observe(el);
+});
+</script>
+{% endblock %}

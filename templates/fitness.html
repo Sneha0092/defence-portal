@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% block title %}Fitness Tracker – DCGP{% endblock %}
+{% block extra_css %}
+<style>
+.fit-wrap { max-width: 960px; margin: 0 auto; padding: 64px 24px; }
+
+/* FORCE SELECTOR */
+.force-tabs { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+.force-tab {
+  flex: 1; min-width: 140px; padding: 16px 20px; border-radius: 10px;
+  border: 2px solid var(--border); background: var(--surface);
+  cursor: pointer; text-align: center; transition: all 0.2s;
+  font-family: var(--font-head); font-size: 15px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+}
+.force-tab:hover { border-color: var(--border2); color: var(--text); }
+.force-tab.active-army { border-color: #6dbf82; color: #6dbf82; background: rgba(74,124,89,0.1); }
+.force-tab.active-navy { border-color: #5fa8e8; color: #5fa8e8; background: rgba(37,99,168,0.1); }
+.force-tab.active-air  { border-color: #7ec8fa; color: #7ec8fa; background: rgba(21,101,192,0.1); }
+
+/* STANDARDS BAR */
+.std-bar {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 10px;
+  margin-bottom: 32px;
+}
+.std-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 16px; text-align: center;
+}
+.std-icon { font-size: 20px; margin-bottom: 6px; }
+.std-val { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+.std-lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+/* FORM */
+.fit-form-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 36px; margin-bottom: 36px; }
+.form-grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 16px; }
+.input-hint { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+/* RESULT */
+.result-banner {
+  border-radius: 12px; padding: 24px 28px; margin-bottom: 28px;
+  display: flex; align-items: center; gap: 20px;
+}
+.result-banner.pass { background: rgba(74,124,89,0.15); border: 2px solid #6dbf82; }
+.result-banner.fail { background: rgba(180,40,40,0.12); border: 2px solid #f87171; }
+.result-icon { font-size: 48px; flex-shrink: 0; }
+.result-title { font-family: var(--font-head); font-size: 26px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.result-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+/* METRIC CARDS */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 14px; margin-bottom: 32px; }
+.metric-card {
+  background: var(--surface); border-radius: 10px; padding: 20px;
+  border: 2px solid;
+}
+.metric-card.pass-card { border-color: rgba(74,124,89,0.5); }
+.metric-card.fail-card { border-color: rgba(248,113,113,0.5); }
+.metric-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.metric-icon { font-size: 24px; }
+.metric-badge {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px;
+  border-radius: 20px;
+}
+.metric-badge.pass { background: rgba(74,124,89,0.2); color: #6dbf82; }
+.metric-badge.fail { background: rgba(248,113,113,0.15); color: #f87171; }
+.metric-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.metric-your { font-family: var(--font-head); font-size: 24px; font-weight: 700; color: #fff; }
+.metric-std { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.metric-gap { font-size: 12px; color: #f87171; margin-top: 6px; font-style: italic; }
+
+/* PROGRESS BAR */
+.prog-wrap { margin-top: 10px; }
+.prog-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.prog-fill.pass { background: #6dbf82; }
+.prog-fill.fail { background: #f87171; }
+
+/* TIPS */
+.tips-section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 32px; }
+.tips-title { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+.tip-item { display: flex; gap: 12px; margin-bottom: 12px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.tip-icon { flex-shrink: 0; font-size: 16px; }
+
+/* HISTORY */
+.hist-section { margin-top: 48px; }
+.hist-title { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.hist-table { width: 100%; border-collapse: collapse; font-size: 13px; overflow-x: auto; display: block; }
+.hist-table th { padding: 10px 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+.hist-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); white-space: nowrap; }
+.hist-table tr:hover td { background: rgba(255,255,255,0.02); }
+.pass-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #6dbf82; margin-right: 6px; }
+.fail-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #f87171; margin-right: 6px; }
+.del-btn { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: #f87171; background: none; border: 1px solid rgba(248,113,113,0.3); border-radius: 4px; padding: 3px 8px; cursor: pointer; }
+.del-btn:hover { background: rgba(248,113,113,0.1); }
+.force-dot-army { color: #6dbf82; font-weight: 700; }
+.force-dot-navy { color: #5fa8e8; font-weight: 700; }
+.force-dot-air  { color: #7ec8fa; font-weight: 700; }
+.login-nudge { text-align: center; padding: 24px; background: var(--surface); border: 1px dashed var(--border2); border-radius: 10px; font-size: 14px; color: var(--muted); margin-top: 32px; }
+.login-nudge a { color: var(--gold); text-decoration: none; }
+@media(max-width:700px){
+  .std-bar { grid-template-columns: repeat(2,1fr); }
+  .result-banner { flex-direction: column; text-align: center; }
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="fit-wrap">
+  <div class="section-label">Physical Readiness</div>
+  <div class="section-heading">Fitness <span>Tracker</span></div>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:32px;max-width:600px;">
+    Enter your fitness stats and instantly compare against official Indian Army, Navy, and Air Force standards. Get pass/fail results with gap analysis and improvement tips.
+  </p>
+
+  <!-- STANDARDS REFERENCE -->
+  <div style="margin-bottom:32px;">
+    <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Official Standards Reference</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+      {% for key, std in standards.items() %}
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;border-left:3px solid {{ std.color }};">
+        <div style="font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:{{ std.color }};margin-bottom:10px;">{{ std.label }}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:var(--muted);">
+          <span>🏃 Run (1.6km)</span><span style="color:var(--text);">≤ {{ std.run_max }} min</span>
+          <span>💪 Push-ups</span><span style="color:var(--text);">≥ {{ std.pushups_min }}</span>
+          <span>🏋️ Sit-ups</span><span style="color:var(--text);">≥ {{ std.situps_min }}</span>
+          <span>⚖️ BMI</span><span style="color:var(--text);">{{ std.bmi_min }}–{{ std.bmi_max }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="fit-form-card">
+    <div style="font-family:var(--font-head);font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:24px;">Enter Your Stats</div>
+    <form method="POST">
+
+      <!-- FORCE SELECT -->
+      <div style="margin-bottom:24px;">
+        <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Select Force to Compare Against</div>
+        <div class="force-tabs" id="forceTabs">
+          <div class="force-tab {% if form_data.get('force','army')=='army' %}active-army{% endif %}" onclick="setForce('army',this)">⚔️ Army</div>
+          <div class="force-tab {% if form_data.get('force')=='navy' %}active-navy{% endif %}"         onclick="setForce('navy',this)">⚓ Navy</div>
+          <div class="force-tab {% if form_data.get('force')=='air'  %}active-air{% endif %}"          onclick="setForce('air',this)">✈️ Air Force</div>
+        </div>
+        <input type="hidden" name="force" id="forceInput" value="{{ form_data.get('force','army') }}">
+      </div>
+
+      <div class="form-grid-3">
+        <div class="form-group">
+          <label>1.6 km Run Time (min)</label>
+          <input type="number" name="run_time" step="0.1" min="3" max="20"
+            value="{{ form_data.get('run_time','') }}" placeholder="e.g. 7.2" required>
+          <div class="input-hint">Enter in minutes e.g. 7.5 = 7 min 30 sec</div>
+        </div>
+        <div class="form-group">
+          <label>Push-ups (count)</label>
+          <input type="number" name="pushups" min="0" max="200"
+            value="{{ form_data.get('pushups','') }}" placeholder="e.g. 38" required>
+          <div class="input-hint">Max in 2 minutes</div>
+        </div>
+        <div class="form-group">
+          <label>Sit-ups (count)</label>
+          <input type="number" name="situps" min="0" max="200"
+            value="{{ form_data.get('situps','') }}" placeholder="e.g. 28" required>
+          <div class="input-hint">Max in 2 minutes</div>
+        </div>
+        <div class="form-group">
+          <label>Height (cm)</label>
+          <input type="number" name="height" min="140" max="210"
+            value="{{ form_data.get('height','') }}" placeholder="e.g. 170" required>
+        </div>
+        <div class="form-group">
+          <label>Weight (kg)</label>
+          <input type="number" name="weight" step="0.1" min="30" max="150"
+            value="{{ form_data.get('weight','') }}" placeholder="e.g. 65.5" required>
+          <div class="input-hint">Used to calculate BMI</div>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" style="margin-top:8px;max-width:300px;">Check Fitness →</button>
+    </form>
+  </div>
+
+  <!-- RESULTS -->
+  {% if result %}
+  {% set std = result.std %}
+
+  <!-- OVERALL BANNER -->
+  <div class="result-banner {{ 'pass' if result.overall else 'fail' }}">
+    <div class="result-icon">{{ '🎖️' if result.overall else '⚠️' }}</div>
+    <div>
+      <div class="result-title">{{ '✅ PHYSICALLY FIT' if result.overall else '❌ NEEDS IMPROVEMENT' }}</div>
+      <div class="result-sub">
+        {% if result.overall %}
+          You meet all {{ std.label }} physical fitness standards. Great work!
+        {% else %}
+          You need to improve in {{ [('Run',not result.run_pass),('Push-ups',not result.pushup_pass),('Sit-ups',not result.situp_pass),('BMI',not result.bmi_pass)] | selectattr(1) | map(attribute=0) | list | join(', ') }}.
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- METRIC CARDS -->
+  <div class="metrics-grid">
+
+    <!-- RUN -->
+    <div class="metric-card {{ 'pass-card' if result.run_pass else 'fail-card' }}">
+      <div class="metric-top">
+        <div class="metric-icon">🏃</div>
+        <span class="metric-badge {{ 'pass' if result.run_pass else 'fail' }}">{{ 'PASS' if result.run_pass else 'FAIL' }}</span>
+      </div>
+      <div class="metric-label">1.6 km Run</div>
+      <div class="metric-your">{{ result.run_time }} min</div>
+      <div class="metric-std">Standard: ≤ {{ std.run_max }} min</div>
+      {% if not result.run_pass %}
+      <div class="metric-gap">{{ result.run_gap }} min over limit — need to be faster</div>
+      {% endif %}
+      <div class="prog-wrap">
+        <div class="prog-track">
+          <div class="prog-fill {{ 'pass' if result.run_pass else 'fail' }}"
+               style="width:{{ [100, (std.run_max / result.run_time * 100)|int]|min }}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PUSH-UPS -->
+    <div class="metric-card {{ 'pass-card' if result.pushup_pass else 'fail-card' }}">
+      <div class="metric-top">
+        <div class="metric-icon">💪</div>
+        <span class="metric-badge {{ 'pass' if result.pushup_pass else 'fail' }}">{{ 'PASS' if result.pushup_pass else 'FAIL' }}</span>
+      </div>
+      <div class="metric-label">Push-ups</div>
+      <div class="metric-your">{{ result.pushups }}</div>
+      <div class="metric-std">Standard: ≥ {{ std.pushups_min }}</div>
+      {% if not result.pushup_pass %}
+      <div class="metric-gap">Need {{ result.pushup_gap }} more push-ups</div>
+      {% endif %}
+      <div class="prog-wrap">
+        <div class="prog-track">
+          <div class="prog-fill {{ 'pass' if result.pushup_pass else 'fail' }}"
+               style="width:{{ [100, (result.pushups / std.pushups_min * 100)|int]|min }}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIT-UPS -->
+    <div class="metric-card {{ 'pass-card' if result.situp_pass else 'fail-card' }}">
+      <div class="metric-top">
+        <div class="metric-icon">🏋️</div>
+        <span class="metric-badge {{ 'pass' if result.situp_pass else 'fail' }}">{{ 'PASS' if result.situp_pass else 'FAIL' }}</span>
+      </div>
+      <div class="metric-label">Sit-ups</div>
+      <div class="metric-your">{{ result.situps }}</div>
+      <div class="metric-std">Standard: ≥ {{ std.situps_min }}</div>
+      {% if not result.situp_pass %}
+      <div class="metric-gap">Need {{ result.situp_gap }} more sit-ups</div>
+      {% endif %}
+      <div class="prog-wrap">
+        <div class="prog-track">
+          <div class="prog-fill {{ 'pass' if result.situp_pass else 'fail' }}"
+               style="width:{{ [100, (result.situps / std.situps_min * 100)|int]|min }}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BMI -->
+    <div class="metric-card {{ 'pass-card' if result.bmi_pass else 'fail-card' }}">
+      <div class="metric-top">
+        <div class="metric-icon">⚖️</div>
+        <span class="metric-badge {{ 'pass' if result.bmi_pass else 'fail' }}">{{ 'PASS' if result.bmi_pass else 'FAIL' }}</span>
+      </div>
+      <div class="metric-label">BMI</div>
+      <div class="metric-your">{{ result.bmi }}</div>
+      <div class="metric-std">Standard: {{ std.bmi_min }}–{{ std.bmi_max }}</div>
+      {% if not result.bmi_pass %}
+      <div class="metric-gap">
+        {% if result.bmi < std.bmi_min %}Underweight — gain healthy muscle mass
+        {% else %}Overweight — reduce with cardio + diet{% endif %}
+      </div>
+      {% endif %}
+      <div class="prog-wrap">
+        <div class="prog-track">
+          <div class="prog-fill {{ 'pass' if result.bmi_pass else 'fail' }}"
+               style="width:{{ [100, (result.bmi / std.bmi_max * 100)|int]|min }}%"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IMPROVEMENT TIPS -->
+  {% if not result.overall %}
+  <div class="tips-section">
+    <div class="tips-title">💡 Improvement Tips</div>
+    {% if not result.run_pass %}
+    <div class="tip-item"><span class="tip-icon">🏃</span><span><strong style="color:#fff;">Running:</strong> Start with interval training — alternate 1 min sprint with 2 min jog. Aim to reduce your time by 10 sec every week. Target: {{ std.run_max }} min for 1.6 km.</span></div>
+    {% endif %}
+    {% if not result.pushup_pass %}
+    <div class="tip-item"><span class="tip-icon">💪</span><span><strong style="color:#fff;">Push-ups:</strong> Do 3 sets daily — max reps each set. Rest 60 sec between sets. Add 2 reps every 3 days. You need {{ result.pushup_gap }} more to pass.</span></div>
+    {% endif %}
+    {% if not result.situp_pass %}
+    <div class="tip-item"><span class="tip-icon">🏋️</span><span><strong style="color:#fff;">Sit-ups:</strong> Practice 4 sets of 15 daily with proper form. Engage core fully. You need {{ result.situp_gap }} more to pass.</span></div>
+    {% endif %}
+    {% if not result.bmi_pass %}
+    <div class="tip-item"><span class="tip-icon">⚖️</span><span><strong style="color:#fff;">BMI ({{ result.bmi }}):</strong>
+      {% if result.bmi < std.bmi_min %}Focus on strength training and protein-rich diet to build healthy muscle mass.
+      {% else %}Combine cardio (running, cycling) with a calorie-controlled diet. Avoid crash diets.{% endif %}
+    </span></div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if not user %}
+  <div class="login-nudge">💾 <a href="/login">Login</a> or <a href="/register">Register</a> to save your fitness results and track progress over time.</div>
+  {% endif %}
+  {% endif %}
+
+  <!-- HISTORY -->
+  {% if user and history %}
+  <div class="hist-section">
+    <div class="hist-title">📊 Your Fitness History (Last 10)</div>
+    <table class="hist-table">
+      <tr>
+        <th>Date</th><th>Force</th><th>Run</th><th>Push-ups</th>
+        <th>Sit-ups</th><th>BMI</th><th>Result</th><th></th>
+      </tr>
+      {% for h in history %}
+      <tr>
+        <td style="color:var(--muted);">{{ h.logged_at.strftime('%d %b %Y') }}</td>
+        <td class="force-dot-{{ h.force }}">
+          {{ '⚔️' if h.force=='army' else ('⚓' if h.force=='navy' else '✈️') }}
+          {{ h.force.title() }}
+        </td>
+        <td>{{ h.run_time }} min <span style="color:{{ '#6dbf82' if h.run_pass else '#f87171' }}">{{ '✓' if h.run_pass else '✗' }}</span></td>
+        <td>{{ h.pushups }} <span style="color:{{ '#6dbf82' if h.pushup_pass else '#f87171' }}">{{ '✓' if h.pushup_pass else '✗' }}</span></td>
+        <td>{{ h.situps }} <span style="color:{{ '#6dbf82' if h.situp_pass else '#f87171' }}">{{ '✓' if h.situp_pass else '✗' }}</span></td>
+        <td>{{ (h.weight/((h.height/100)**2))|round(1) }} <span style="color:{{ '#6dbf82' if h.bmi_pass else '#f87171' }}">{{ '✓' if h.bmi_pass else '✗' }}</span></td>
+        <td>
+          {% if h.overall %}
+            <span style="color:#6dbf82;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1px;">✅ PASS</span>
+          {% else %}
+            <span style="color:#f87171;font-family:var(--font-head);font-size:13px;font-weight:700;letter-spacing:1px;">❌ FAIL</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" action="/fitness/delete/{{ h.id }}" style="display:inline;">
+            <button type="submit" class="del-btn">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% elif user %}
+  <div class="login-nudge" style="margin-top:32px;">No fitness logs yet. Enter your stats above to start tracking!</div>
+  {% endif %}
+
+</div>
+
+<script>
+function setForce(force, el) {
+  document.getElementById('forceInput').value = force;
+  document.querySelectorAll('.force-tab').forEach(t => t.className = 'force-tab');
+  el.className = 'force-tab active-' + force;
+}
+</script>
+{% endblock %}

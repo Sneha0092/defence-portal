@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Contact – DCGP{% endblock %}
+{% block content %}
+<div class="form-wrap" style="max-width:560px;">
+  <div class="section-label">Get In Touch</div>
+  <div class="section-heading" style="margin-bottom:28px;">Send a <span>Query</span></div>
+  <div class="form-card">
+    <div class="form-sub">Have a question about entry schemes, eligibility, or career paths? We'll respond to your query.</div>
+    <form method="POST" style="margin-top:24px;">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" name="name" value="{{ user.name if user else '' }}" placeholder="Full name" required>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" value="{{ user.email if user else '' }}" placeholder="you@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Your Query</label>
+        <textarea name="message" placeholder="Ask about NDA preparation, AFCAT eligibility, SSB tips, or anything else..." required></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Submit Query →</button>
+    </form>
+  </div>
+
+  <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;">
+      <div style="font-size:24px;margin-bottom:8px;">⚔️</div>
+      <div style="font-family:var(--font-head);font-size:13px;letter-spacing:1px;color:#6dbf82;">joinindianarmy.nic.in</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;">
+      <div style="font-size:24px;margin-bottom:8px;">⚓</div>
+      <div style="font-family:var(--font-head);font-size:13px;letter-spacing:1px;color:#5fa8e8;">joinindiannavy.gov.in</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;grid-column:span 2;">
+      <div style="font-size:24px;margin-bottom:8px;">✈️</div>
+      <div style="font-family:var(--font-head);font-size:13px;letter-spacing:1px;color:#7ec8fa;">careerindianairforce.cdac.in</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

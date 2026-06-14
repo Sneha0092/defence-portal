@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard – DCGP{% endblock %}
+{% block extra_css %}
+<style>
+.dash-wrap { max-width: 1000px; margin: 0 auto; padding: 64px 24px; }
+.dash-header { display: flex; align-items: center; gap: 20px; margin-bottom: 48px; padding: 32px; background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; }
+.dash-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #8b5e00); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 28px; font-weight: 700; color: #000; flex-shrink: 0; }
+.dash-name { font-family: var(--font-head); font-size: 26px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; }
+.dash-email { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-top: 4px; }
+.dash-joined { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 6px; }
+.dash-section-title { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.dash-block { margin-bottom: 48px; }
+.bm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.bm-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.bm-force { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+.bm-name { font-family: var(--font-head); font-size: 16px; font-weight: 600; color: #fff; }
+.bm-tag { font-size: 11px; color: var(--muted); }
+.bm-date { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: auto; }
+.bm-remove { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #f87171; background: none; border: 1px solid rgba(248,113,113,0.3); border-radius: 4px; padding: 4px 10px; cursor: pointer; transition: all 0.2s; width: fit-content; }
+.bm-remove:hover { background: rgba(248,113,113,0.1); }
+.query-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 12px; }
+.query-msg { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 8px; }
+.query-date { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.check-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 10px; }
+.check-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.check-results { display: flex; flex-wrap: wrap; gap: 6px; }
+.check-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(201,162,39,0.1); border: 1px solid rgba(201,162,39,0.25); color: var(--gold); }
+.empty-state { text-align: center; padding: 40px; color: var(--muted); font-style: italic; font-size: 14px; }
+.empty-state a { color: var(--gold); text-decoration: none; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="dash-wrap">
+
+  <div class="dash-header">
+    <div class="dash-avatar">{{ user.name[0].upper() }}</div>
+    <div>
+      <div class="dash-name">{{ user.name }}</div>
+      <div class="dash-email">{{ user.email }}</div>
+      <div class="dash-joined">Member since {{ user.created.strftime('%d %b %Y') }}</div>
+    </div>
+  </div>
+
+  <!-- BOOKMARKS -->
+  <div class="dash-block">
+    <div class="dash-section-title">★ Saved Bookmarks ({{ bookmarks|length }})</div>
+    {% if bookmarks %}
+    <div class="bm-grid">
+      {% for bm in bookmarks %}
+      <div class="bm-card">
+        <div class="bm-force">{{ bm.force }}</div>
+        <div class="bm-name">{{ bm.entry_name }}</div>
+        <div class="bm-tag">{{ bm.entry_tag }}</div>
+        <div class="bm-date">Saved {{ bm.saved_at.strftime('%d %b %Y') }}</div>
+        <form method="POST" action="/bookmark/remove/{{ bm.id }}">
+          <button type="submit" class="bm-remove">✕ Remove</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">No bookmarks yet. <a href="/eligibility">Check your eligibility</a> and save matching entries.</div>
+    {% endif %}
+  </div>
+
+  <!-- ELIGIBILITY CHECKS -->
+  <div class="dash-block">
+    <div class="dash-section-title">🔍 Recent Eligibility Checks ({{ checks|length }})</div>
+    {% if checks %}
+      {% for c in checks %}
+      <div class="check-card">
+        <div class="check-meta">Age: {{ c.age }} &nbsp;·&nbsp; {{ c.gender.title() }} &nbsp;·&nbsp; {{ c.edu.title() }} &nbsp;·&nbsp; Height: {{ c.height }}cm &nbsp;·&nbsp; {{ c.checked.strftime('%d %b %Y, %I:%M %p') }}</div>
+        {% if c.result_list %}
+        <div class="check-results">
+          {% for r in c.result_list %}<span class="check-tag">{{ r }}</span>{% endfor %}
+        </div>
+        {% else %}
+        <div style="font-size:13px;color:var(--muted);">No matching entries found</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty-state">No checks yet. <a href="/eligibility">Try the eligibility checker</a>.</div>
+    {% endif %}
+  </div>
+
+  <!-- QUERIES -->
+  <div class="dash-block">
+    <div class="dash-section-title">📬 Your Queries ({{ queries|length }})</div>
+    {% if queries %}
+      {% for q in queries %}
+      <div class="query-card">
+        <div class="query-msg">{{ q.message }}</div>
+        <div class="query-date">Submitted {{ q.submitted.strftime('%d %b %Y, %I:%M %p') }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty-state">No queries submitted yet. <a href="/contact">Ask a question</a>.</div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

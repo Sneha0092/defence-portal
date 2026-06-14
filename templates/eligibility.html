@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Eligibility Checker – DCGP{% endblock %}
+{% block extra_css %}
+<style>
+.elig-wrap { max-width: 900px; margin: 0 auto; padding: 64px 24px; }
+.elig-form-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 40px; margin-bottom: 40px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.result-section { }
+.result-header { font-family: var(--font-head); font-size: 13px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; padding: 16px 20px; border-radius: 8px; }
+.result-header.found  { background: rgba(74,124,89,0.15); color: #6dbf82; border: 1px solid rgba(74,124,89,0.3); }
+.result-header.none   { background: rgba(180,40,40,0.15); color: #f87171; border: 1px solid rgba(180,40,40,0.3); }
+.result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.result-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 24px; position: relative; overflow: hidden; transition: transform 0.2s; }
+.result-card:hover { transform: translateY(-2px); }
+.result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gold); }
+.result-force { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.result-name { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.result-tag { display: inline-block; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; background: rgba(201,162,39,0.15); color: var(--gold); border: 1px solid rgba(201,162,39,0.3); margin-bottom: 12px; }
+.result-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+.bm-btn { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 14px; border-radius: 4px; border: 1px solid var(--border2); background: none; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.bm-btn:hover { border-color: var(--gold); color: var(--gold); }
+.bm-btn.saved { border-color: var(--gold); color: var(--gold); background: rgba(201,162,39,0.1); }
+.no-results { text-align: center; padding: 48px; color: var(--muted); font-style: italic; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="elig-wrap">
+  <div class="section-label">Smart Tool</div>
+  <div class="section-heading">Eligibility <span>Checker</span></div>
+
+  <div class="elig-form-card">
+    <form method="POST">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Your Age</label>
+          <input type="number" name="age" min="16" max="30" step="0.5"
+            value="{{ form_data.get('age', '') }}" placeholder="e.g. 18" required>
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select name="gender">
+            <option value="male"   {% if form_data.get('gender')=='male'   %}selected{% endif %}>Male</option>
+            <option value="female" {% if form_data.get('gender')=='female' %}selected{% endif %}>Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Education Level</label>
+          <select name="edu">
+            <option value="10th"        {% if form_data.get('edu')=='10th'        %}selected{% endif %}>10th Pass</option>
+            <option value="12th"        {% if form_data.get('edu')=='12th'        %}selected{% endif %}>12th Pass</option>
+            <option value="graduate"    {% if form_data.get('edu')=='graduate'    %}selected{% endif %}>Graduate (Any)</option>
+            <option value="engineering" {% if form_data.get('edu')=='engineering' %}selected{% endif %}>B.E / B.Tech</option>
+            <option value="law"         {% if form_data.get('edu')=='law'         %}selected{% endif %}>LLB / LLM</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Stream (12th)</label>
+          <select name="stream">
+            <option value="pcm" {% if form_data.get('stream')=='pcm' %}selected{% endif %}>PCM (Physics, Chemistry, Math)</option>
+            <option value="any" {% if form_data.get('stream')=='any' %}selected{% endif %}>Arts / Commerce / Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Height (cm)</label>
+          <input type="number" name="height" min="140" max="210"
+            value="{{ form_data.get('height', '') }}" placeholder="e.g. 168" required>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" style="margin-top:8px;">Check My Eligibility →</button>
+    </form>
+  </div>
+
+  {% if results is not none %}
+    {% if results %}
+      <div class="result-header found">✅ &nbsp; {{ results|length }} Entry Scheme(s) Match Your Profile</div>
+      <div class="result-grid">
+        {% for r in results %}
+        <div class="result-card">
+          <div class="result-force">{{ r.force }}</div>
+          <div class="result-name">{{ r.name }}</div>
+          <span class="result-tag">{{ r.tag }}</span>
+          <div class="result-desc">{{ r.desc }}</div>
+          {% if r.note %}
+          <div style="font-size:11px;color:#f0c84a;background:rgba(240,200,74,0.08);border:1px solid rgba(240,200,74,0.2);border-radius:4px;padding:6px 10px;margin-bottom:12px;line-height:1.6;">
+            ⚠️ {{ r.note }}
+          </div>
+          {% endif %}
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          {% if user %}
+          <button class="bm-btn {% if r.name in bookmarks %}saved{% endif %}"
+            onclick="toggleBookmark(this, '{{ r.name }}', '{{ r.force }}', '{{ r.tag }}')"
+            data-name="{{ r.name }}">
+            {% if r.name in bookmarks %}★ Saved{% else %}☆ Save{% endif %}
+          </button>
+          {% else %}
+          <a href="/login" style="font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px;">Login to save</a>
+          {% endif %}
+          {% if r.official %}
+          <a href="{{ r.official }}" target="_blank" style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:#5fa8e8;text-decoration:none;">🔗 Official Site →</a>
+          {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="result-header none">❌ &nbsp; No entries match your current profile. Try adjusting your inputs.</div>
+      <div class="no-results">Consider checking eligibility criteria on official websites and applying when criteria are met.</div>
+    {% endif %}
+  {% endif %}
+</div>
+
+<script>
+const bookmarks = {{ bookmarks | tojson }};
+async function toggleBookmark(btn, name, force, tag) {
+  const res = await fetch('/bookmark', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({entry_name: name, force: force, entry_tag: tag})
+  });
+  const data = await res.json();
+  if (data.status === 'saved') {
+    btn.textContent = '★ Saved'; btn.classList.add('saved');
+  } else {
+    btn.textContent = '☆ Save'; btn.classList.remove('saved');
+  }
+}
+</script>
+{% endblock %}
